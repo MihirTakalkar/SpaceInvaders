@@ -17,9 +17,24 @@ namespace SpaceInvaders
             this.speed = speed;
         }
 
-        public void Update()
+        public void Update(Viewport viewport)
         {
-
+            if (position.X <= viewport.Width)
+            {
+                position.X += speed.X;
+           
+            }
+            if(position.X + image.Width >= viewport.Width)
+            {
+                speed.X *= -1;
+                position.Y += 100;
+            }
+            if(position.X < 0)
+            {
+                speed.X *= -1;
+                position.Y += 100;
+            }
+            
         }
        
     }

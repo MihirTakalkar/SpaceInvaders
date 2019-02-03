@@ -19,7 +19,7 @@ namespace SpaceInvaders
 
         public void Update()
         {
-
+            position.Y += speed.Y;
         }
     }
 }

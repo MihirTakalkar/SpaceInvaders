@@ -25,12 +25,12 @@ namespace SpaceInvaders
 
             if(ks.IsKeyDown(Keys.Left))
             {
-                position.X -= 5;
+                position.X -= speed.X;
             }
 
             if (ks.IsKeyDown(Keys.Right))
             {
-                position.X += 5;
+                position.X += speed.X;
             }
 
            if(position.X > viewport.Width)
