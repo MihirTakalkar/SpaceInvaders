@@ -10,6 +10,7 @@ namespace SpaceInvaders
 {
     class Alien : Sprite
     {
+        //shoot timer
         Vector2 speed;
 
         public Alien(Texture2D image, Vector2 position, Vector2 speed, Color tint) : base(position,image, tint)
@@ -19,6 +20,8 @@ namespace SpaceInvaders
 
         public void Update(Viewport viewport)
         {
+            //shoot logic
+
             if (position.X <= viewport.Width)
             {
                 position.X += speed.X;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 
@@ -34,15 +35,21 @@ namespace SpaceInvaders
     /// </summary>
     public class Game1 : Game
     {
+        Random random = new Random();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Ship ship;
+        int lives = 3;
         List<Alien> aliens;
-        bool cool;
         Texture2D bulletImage;
         List<Bullet> shipbullets;
+        List<Bullet> alienbullets;
         KeyboardState ks;
         SpriteFont font;
+
+        TimeSpan spawnEnemyBulletTime = TimeSpan.FromMilliseconds(200);
+        TimeSpan elapsedSpawnEnemyBullet;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -68,10 +75,12 @@ namespace SpaceInvaders
         {
             shipbullets = new List<Bullet>();
             aliens = new List<Alien>();
+            alienbullets = new List<Bullet>();
             int positiony = 0;
             int positionx = 0;
+            lives = 3;
 
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 15; i++)
             {
                 aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(positionx, positiony), new Vector2(2, 0), Color.Red));
                 positionx += 130;
@@ -118,10 +127,25 @@ namespace SpaceInvaders
 
             KeyboardState lastKs = ks;
             ks = Keyboard.GetState();
+
+            elapsedSpawnEnemyBullet += gameTime.ElapsedGameTime;
+
+            if (elapsedSpawnEnemyBullet >= spawnEnemyBulletTime)
+            {
+                elapsedSpawnEnemyBullet = TimeSpan.Zero;
+                if (aliens.Count != 0)
+                {
+                    Bullet newBullet = new Bullet(bulletImage, aliens[random.Next(aliens.Count)].position + new Vector2(55, 65), new Vector2(0, 10), Color.White);
+                    newBullet.spriteEffects = SpriteEffects.FlipVertically;
+                    alienbullets.Add(newBullet);
+                }
+
+            }
+
             if (ks.IsKeyDown(Keys.Q) && lastKs.IsKeyUp(Keys.Q))
             {
-                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(0,0), new Vector2(2, 0), Color.Red));
-                
+                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(0, 0), new Vector2(2, 0), Color.Red));
+
             }
             if (ks.IsKeyDown(Keys.Space) && lastKs.IsKeyUp(Keys.Space))
             {
@@ -133,11 +157,18 @@ namespace SpaceInvaders
                 shipbullets.Add(new Bullet(bulletImage, ship.position + new Vector2(80, -55), new Vector2(0, -10), Color.White));
             }
 
+
+
             ship.Update(GraphicsDevice.Viewport);
 
             for (int i = 0; i < aliens.Count; i++)
             {
                 aliens[i].Update(GraphicsDevice.Viewport);
+            }
+
+            for (int i = 0; i < alienbullets.Count; i++)
+            {
+                alienbullets[i].Update();
             }
 
             for (int i = 0; i < shipbullets.Count; i++)
@@ -155,10 +186,32 @@ namespace SpaceInvaders
                     }
                 }
             }
-            if(ks.IsKeyDown(Keys.R))
+
+            for (int i = 0; i < alienbullets.Count; i++)
+            {
+                if (alienbullets[i].Hitbox.Intersects(ship.Hitbox))
+                {
+                    lives--;
+                    alienbullets.Remove(alienbullets[i]);
+                }
+
+            }
+            if (lives == 0)
+            {
+                shipbullets.Clear();
+                alienbullets.Clear();
+                for(int i = 0; i < aliens.Count; i++)
+                {
+                    aliens[i].position = Vector2.Zero;
+                }
+            }
+
+            if (ks.IsKeyDown(Keys.R))
             {
                 Reset();
             }
+
+
 
             base.Update(gameTime);
         }
@@ -176,6 +229,12 @@ namespace SpaceInvaders
             {
                 shipbullets[i].Draw(spriteBatch);
             }
+
+            for (int i = 0; i < alienbullets.Count; i++)
+            {
+                alienbullets[i].Draw(spriteBatch);
+            }
+
             ship.Draw(spriteBatch);
             for (int i = 0; i < aliens.Count; i++)
             {
@@ -183,8 +242,16 @@ namespace SpaceInvaders
             }
             if (aliens.Count == 0)
             {
-                spriteBatch.DrawString(font, "You Win! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Turquoise);
+                spriteBatch.DrawString(font, "You Win! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Green);
+
             }
+
+            if (lives == 0 && aliens.Count > 0)
+            {
+                spriteBatch.DrawString(font, "You Lose! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Red);
+
+            }
+            spriteBatch.DrawString(font, $"Lives: {lives}", new Vector2(0, 0), Color.Turquoise);
             // TODO: Add your drawing code here
 
             spriteBatch.End();
