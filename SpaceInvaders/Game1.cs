@@ -40,12 +40,16 @@ namespace SpaceInvaders
         SpriteBatch spriteBatch;
         Ship ship;
         int lives = 3;
+        int shieldhealth = 5;
         List<Alien> aliens;
         Texture2D bulletImage;
         List<Bullet> shipbullets;
         List<Bullet> alienbullets;
+        List<Shield> shields;
         KeyboardState ks;
         SpriteFont font;
+
+        //List<Shield>
 
         TimeSpan spawnEnemyBulletTime = TimeSpan.FromMilliseconds(200);
         TimeSpan elapsedSpawnEnemyBullet;
@@ -76,15 +80,26 @@ namespace SpaceInvaders
             shipbullets = new List<Bullet>();
             aliens = new List<Alien>();
             alienbullets = new List<Bullet>();
-            int positiony = 0;
-            int positionx = 0;
+            shields = new List<Shield>();
+            int alienpositiony = 0;
+            int alienpositionx = 0;
+            int shieldpositiony = GraphicsDevice.Viewport.Height / 2;
+            int shieldpositionx = 400;
             lives = 3;
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 13; i++)
             {
-                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(positionx, positiony), new Vector2(2, 0), Color.Red));
-                positionx += 130;
-                positiony += 0;
+                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(alienpositionx, alienpositiony), new Vector2(2, 0), Color.Red));
+                alienpositionx += 130;
+                alienpositiony += 0;
+            }
+            
+
+            for (int i = 0; i < 3; i++)
+            {
+                shields.Add(new Shield(new Vector2(shieldpositionx, shieldpositiony), Content.Load<Texture2D>("shield"), Color.White, font, shieldhealth));
+                shieldpositionx += 450;
+                shieldpositiony += 0;
             }
             bulletImage = Content.Load<Texture2D>("Bullet");
         }
@@ -99,9 +114,11 @@ namespace SpaceInvaders
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ship = new Ship(Content.Load<Texture2D>("SpaceShip"), new Vector2(850, 850), new Vector2(5, 0), Color.Green);
 
+            font = Content.Load<SpriteFont>("Text");
+
             Reset();
 
-            font = Content.Load<SpriteFont>("Text");
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -196,11 +213,25 @@ namespace SpaceInvaders
                 }
 
             }
+
+            for (int i = 0; i < alienbullets.Count; i++)
+            {
+                for (int x = 0; x < shields.Count; x++)
+                {
+                    if (alienbullets[i].Hitbox.Intersects(shields[x].Hitbox))
+                    {
+                        shieldhealth--;
+                        
+                    }
+                }
+            }
+    
+
             if (lives == 0)
             {
                 shipbullets.Clear();
                 alienbullets.Clear();
-                for(int i = 0; i < aliens.Count; i++)
+                for (int i = 0; i < aliens.Count; i++)
                 {
                     aliens[i].position = Vector2.Zero;
                 }
@@ -224,6 +255,10 @@ namespace SpaceInvaders
         {
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
+            for (int i = 0; i < shields.Count; i++)
+            {
+                shields[i].Draw(spriteBatch);
+            }
 
             for (int i = 0; i < shipbullets.Count; i++)
             {
@@ -240,6 +275,7 @@ namespace SpaceInvaders
             {
                 aliens[i].Draw(spriteBatch);
             }
+
             if (aliens.Count == 0)
             {
                 spriteBatch.DrawString(font, "You Win! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Green);

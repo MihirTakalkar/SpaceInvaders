@@ -29,12 +29,12 @@ namespace SpaceInvaders
             }
             if(position.X + image.Width >= viewport.Width)
             {
-                speed.X *= -1;
+                speed.X = -Math.Abs(speed.X);
                 position.Y += 100;
             }
             if(position.X < 0)
             {
-                speed.X *= -1;
+                speed.X = Math.Abs(speed.X);
                 position.Y += 100;
             }
             

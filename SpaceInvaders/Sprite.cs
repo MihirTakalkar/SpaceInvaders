@@ -17,10 +17,10 @@ namespace SpaceInvaders
 
 
         //example stuff
-        public int Num
-        {
-            get { return 1; }
-        }
+        //public int Num
+        //{
+        //    get { return 1; }
+        //}
 
         //make a hitbox property like the num example
         public Rectangle Hitbox
@@ -37,7 +37,7 @@ namespace SpaceInvaders
             spriteEffects = SpriteEffects.None;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(image, position, null, tint, 0, Vector2.Zero, Vector2.One, spriteEffects, 0);
         }
