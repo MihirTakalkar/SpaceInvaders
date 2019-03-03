@@ -1,16 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpaceInvaders
 {
-    class Bullet : Sprite
+    internal class Bullet : Sprite
     {
-        Vector2 speed;
+        private Vector2 speed;
 
         public Bullet(Texture2D image, Vector2 position, Vector2 speed, Color tint) : base(position, image, tint)
         {

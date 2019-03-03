@@ -35,24 +35,24 @@ namespace SpaceInvaders
     /// </summary>
     public class Game1 : Game
     {
-        Random random = new Random();
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Ship ship;
-        int lives = 3;
-        int shieldhealth = 5;
-        List<Alien> aliens;
-        Texture2D bulletImage;
-        List<Bullet> shipbullets;
-        List<Bullet> alienbullets;
-        List<Shield> shields;
-        KeyboardState ks;
-        SpriteFont font;
+        private Random random = new Random();
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private Ship ship;
+        private int lives = 3;
+        private int shieldhealth = 25000;
+        private List<Alien> aliens;
+        private Texture2D bulletImage;
+        private List<Bullet> shipbullets;
+        private List<Bullet> alienbullets;
+        private List<Shield> shields;
+        private KeyboardState ks;
+        private SpriteFont font;
 
         //List<Shield>
 
-        TimeSpan spawnEnemyBulletTime = TimeSpan.FromMilliseconds(200);
-        TimeSpan elapsedSpawnEnemyBullet;
+        private TimeSpan spawnEnemyBulletTime = TimeSpan.FromMilliseconds(200);
+        private TimeSpan elapsedSpawnEnemyBullet;
 
         public Game1()
         {
@@ -93,7 +93,7 @@ namespace SpaceInvaders
                 alienpositionx += 130;
                 alienpositiony += 0;
             }
-            
+
 
             for (int i = 0; i < 3; i++)
             {
@@ -101,6 +101,7 @@ namespace SpaceInvaders
                 shieldpositionx += 450;
                 shieldpositiony += 0;
             }
+
             bulletImage = Content.Load<Texture2D>("Bullet");
         }
 
@@ -140,7 +141,9 @@ namespace SpaceInvaders
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             KeyboardState lastKs = ks;
             ks = Keyboard.GetState();
@@ -152,8 +155,10 @@ namespace SpaceInvaders
                 elapsedSpawnEnemyBullet = TimeSpan.Zero;
                 if (aliens.Count != 0)
                 {
-                    Bullet newBullet = new Bullet(bulletImage, aliens[random.Next(aliens.Count)].position + new Vector2(55, 65), new Vector2(0, 10), Color.White);
-                    newBullet.spriteEffects = SpriteEffects.FlipVertically;
+                    Bullet newBullet = new Bullet(bulletImage, aliens[random.Next(aliens.Count)].position + new Vector2(55, 65), new Vector2(0, 10), Color.White)
+                    {
+                        spriteEffects = SpriteEffects.FlipVertically
+                    };
                     alienbullets.Add(newBullet);
                 }
 
@@ -216,16 +221,23 @@ namespace SpaceInvaders
 
             for (int i = 0; i < alienbullets.Count; i++)
             {
+                bool shouldbreak = false;
                 for (int x = 0; x < shields.Count; x++)
                 {
                     if (alienbullets[i].Hitbox.Intersects(shields[x].Hitbox))
                     {
                         shieldhealth--;
-                        
+                        alienbullets.Remove(alienbullets[i]);
+                        shouldbreak = true;
+                        break;
                     }
                 }
+
+                if(shouldbreak)
+                {
+                    break;
+                }
             }
-    
 
             if (lives == 0)
             {
@@ -241,8 +253,6 @@ namespace SpaceInvaders
             {
                 Reset();
             }
-
-
 
             base.Update(gameTime);
         }
@@ -278,7 +288,7 @@ namespace SpaceInvaders
 
             if (aliens.Count == 0)
             {
-                spriteBatch.DrawString(font, "You Win! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Green);
+                spriteBatch.DrawString(font, "You Win! Press R to Restart", new Vector2(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2 - 100), Color.Goldenrod);
 
             }
 

@@ -1,19 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 
 namespace SpaceInvaders
 {
-    class Ship : Sprite
+    internal class Ship : Sprite
     {
-        Vector2 speed;
-      
+        private Vector2 speed;
+
         public Ship(Texture2D tex, Vector2 position, Vector2 speed, Color tint) : base(position, tex, tint)
         {
             this.speed = speed;
@@ -23,7 +18,7 @@ namespace SpaceInvaders
         {
             KeyboardState ks = Keyboard.GetState();
 
-            if(ks.IsKeyDown(Keys.Left))
+            if (ks.IsKeyDown(Keys.Left))
             {
                 position.X -= speed.X;
             }
@@ -33,9 +28,9 @@ namespace SpaceInvaders
                 position.X += speed.X;
             }
 
-           if(position.X > viewport.Width)
+            if (position.X > viewport.Width)
             {
-                position.X = -image.Width; 
+                position.X = -image.Width;
             }
 
             if (position.X + image.Width + 5 <= 0)
