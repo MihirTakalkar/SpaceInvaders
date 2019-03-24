@@ -40,7 +40,7 @@ namespace SpaceInvaders
         private SpriteBatch spriteBatch;
         private Ship ship;
         private int lives = 3;
-        private int shieldhealth = 25000;
+        private int shieldhealth = 250;
         private List<Alien> aliens;
         private Texture2D bulletImage;
         private List<Bullet> shipbullets;
@@ -89,7 +89,7 @@ namespace SpaceInvaders
 
             for (int i = 0; i < 13; i++)
             {
-                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(alienpositionx, alienpositiony), new Vector2(2, 0), Color.Red));
+                aliens.Add(new Alien(Content.Load<Texture2D>("Space Invaders"), new Vector2(alienpositionx, alienpositiony), new Vector2(2, 0), Color.Blue));
                 alienpositionx += 130;
                 alienpositiony += 0;
             }
@@ -205,6 +205,8 @@ namespace SpaceInvaders
                     if (shipbullets[i].Hitbox.Intersects(aliens[x].Hitbox))
                     {
                         aliens.Remove(aliens[x]);
+                        //remove the bullet
+                        shipbullets.RemoveAt(i);
                     }
                 }
             }
@@ -226,16 +228,41 @@ namespace SpaceInvaders
                 {
                     if (alienbullets[i].Hitbox.Intersects(shields[x].Hitbox))
                     {
-                        shieldhealth--;
+                        shields[x].ReduceHealth();
+                        //shieldhealth--;
                         alienbullets.Remove(alienbullets[i]);
                         shouldbreak = true;
                         break;
                     }
+
+                    
                 }
 
                 if(shouldbreak)
                 {
                     break;
+                }
+            }
+            for (int i = 0; i < shipbullets.Count; i++)
+            {
+                for (int x = 0; x < shields.Count; x++)
+                {
+                    if (shipbullets[i].Hitbox.Intersects(shields[x].Hitbox))
+                    {
+                        shields[x].ReduceHealth();
+                        shipbullets.Remove(shipbullets[i]);
+                        break;
+                     
+                    }
+                }
+            }
+
+            for (int i = 0; i < shields.Count; i++)
+            {
+                if (shields[i].Health <= 0)
+                {
+                    shields.RemoveAt(i);
+                    i--;
                 }
             }
 
@@ -248,6 +275,7 @@ namespace SpaceInvaders
                     aliens[i].position = Vector2.Zero;
                 }
             }
+            
 
             if (ks.IsKeyDown(Keys.R))
             {
